@@ -237,6 +237,7 @@ angular.module('vr.directives.slider', ['ngTouch']).directive('slider',
                 },
                 template: // bar background
                     "<span class='bar full'></span>" + // secondary bars used for dual knobs
+                    "<span class='bar progress'></span>" + // the background progress bar
                     "<span class='bar steps'><span class='bubble step' ng-repeat='step in stepBubbles()'></span></span>" + // step bubbles
                     "<span class='bar selection'></span><span class='bar unselected low'></span><span class='bar unselected high'></span>" + // the knobs
                     "<span class='pointer low'></span><span class='pointer high'></span>" + // current value bubbles
@@ -288,21 +289,22 @@ angular.module('vr.directives.slider', ['ngTouch']).directive('slider',
                     function setReferences(refs, dual, inputs) {
                         return {
                             fullBar     : refs[0],                                        // background bar
-                            stepBubs    : refs[1],                                        // the steps bubbles
-                            selBar      : dual ? refs[2] : null,                          // dual knob: the bar between knobs
-                            unSelBarLow : dual ? refs[3] : null,                          // dual knob: the bar to the left of the low knob
-                            unSelBarHigh: dual ? refs[4] : null,                          // dual knob: the bar to the right of the high knob
-                            minPtr      : dual ? refs[5] : refs[2],                       // single knob: the knob, dual knob: the low knob
-                            maxPtr      : dual ? refs[6] : null,                          // dual knob: the high knob
-                            lowBub      : dual ? refs[7] : refs[3],                       // single knob: the value bubble, dual knob: the low value bubble
-                            highBub     : dual ? refs[8] : null,                          // dual knob: the high value bubble
-                            cmbBub      : dual ? refs[9] : null,                          // dual knob: the range values bubble
-                            selBub      : dual ? refs[10] : null,                         // dual knob: the range width bubble
-                            flrBub      : dual ? refs[11] : refs[4],                      // the lower limit bubble
-                            ceilBub     : dual ? refs[12] : refs[5],                      // the upper limit bubble
-                            minInput    : inputs ? (dual ? refs[13] : refs[6]) : null,    // single knob: the actual slider input, dual knob: the low value slider input
-                            maxInput    : inputs ? (dual ? refs[14] : null) : null,       // dual knob: the high value slider input
-                            selInput    : inputs ? (dual ? refs[15] : null) : null        // dual knob: the selection slider input
+                            progBar     : refs[1],                                        // background progress bar
+                            stepBubs    : refs[2],                                        // the steps bubbles
+                            selBar      : dual ? refs[3] : null,                          // dual knob: the bar between knobs
+                            unSelBarLow : dual ? refs[4] : null,                          // dual knob: the bar to the left of the low knob
+                            unSelBarHigh: dual ? refs[5] : null,                          // dual knob: the bar to the right of the high knob
+                            minPtr      : dual ? refs[6] : refs[3],                       // single knob: the knob, dual knob: the low knob
+                            maxPtr      : dual ? refs[7] : null,                          // dual knob: the high knob
+                            lowBub      : dual ? refs[8] : refs[4],                       // single knob: the value bubble, dual knob: the low value bubble
+                            highBub     : dual ? refs[9] : null,                          // dual knob: the high value bubble
+                            cmbBub      : dual ? refs[10] : null,                          // dual knob: the range values bubble
+                            selBub      : dual ? refs[11] : null,                         // dual knob: the range width bubble
+                            flrBub      : dual ? refs[12] : refs[5],                      // the lower limit bubble
+                            ceilBub     : dual ? refs[13] : refs[6],                      // the upper limit bubble
+                            minInput    : inputs ? (dual ? refs[14] : refs[7]) : null,    // single knob: the actual slider input, dual knob: the low value slider input
+                            maxInput    : inputs ? (dual ? refs[15] : null) : null,       // dual knob: the high value slider input
+                            selInput    : inputs ? (dual ? refs[16] : null) : null        // dual knob: the selection slider input
                         };
                     }
 
@@ -352,9 +354,11 @@ angular.module('vr.directives.slider', ['ngTouch']).directive('slider',
                     }
 
                     // set up the background bar so it fills the entire width of the slider
-                    refs.fullBar.css({
-                        left : 0,
-                        right: 0
+                    ['fullBar', 'progBar'].forEach(function(ref) {
+                        refs[ref].css({
+                            left : 0,
+                            right: 0
+                        });
                     });
 
                     // set up range inputs
@@ -1049,6 +1053,15 @@ angular.module('vr.directives.slider', ['ngTouch']).directive('slider',
                                 }
 
                                 /**
+                                 * Update the background progress bar in the DOM
+                                 */
+                                function adjustProgressBar() {
+                                    refs.progBar.css({
+                                        width : percentFromDecodedValue(scope.decodedValues[refLow]) + '%'
+                                    });
+                                }
+
+                                /**
                                  * Update the bubbles in the DOM
                                  */
                                 function adjustBubbles() {
@@ -1158,6 +1171,16 @@ angular.module('vr.directives.slider', ['ngTouch']).directive('slider',
                                     }
                                 }
 
+
+                                /**
+                                 * DRY redraw function
+                                 */
+                                function redrawSliders() {
+                                    setPointers();
+                                    adjustBubbles();
+                                    adjustProgressBar();
+                                }
+
                                 /**
                                  * What to do when dragging ends
                                  */
@@ -1171,8 +1194,7 @@ angular.module('vr.directives.slider', ['ngTouch']).directive('slider',
                                         // if we have a pointer reference
 
                                         // update all the elements in the DOM
-                                        setPointers();
-                                        adjustBubbles();
+                                        redrawSliders();
 
                                         // the pointer is no longer active
                                         pointer.removeClass('active');
@@ -1379,8 +1401,7 @@ angular.module('vr.directives.slider', ['ngTouch']).directive('slider',
 											ctrl.$setViewValue(scope[refLow]);
 
                                             // update the DOM
-                                            setPointers();
-                                            adjustBubbles();
+                                            redrawSliders();
 
                                         });
                                     }
@@ -1564,8 +1585,7 @@ angular.module('vr.directives.slider', ['ngTouch']).directive('slider',
                                 }
 
                                 // update the DOM
-                                setPointers();
-                                adjustBubbles();
+                                redrawSliders();
 
                                 if(!eventsBound) {
                                     // the events haven't been bound yet
