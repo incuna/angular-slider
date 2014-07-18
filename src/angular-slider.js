@@ -1059,7 +1059,6 @@ angular.module('vr.directives.slider', ['ngTouch']).directive('slider',
                                     refs.progBar.css({
                                         width : percentFromDecodedValue(scope.decodedValues[refLow]) + '%'
                                     });
-
                                 }
 
                                 /**
@@ -1172,6 +1171,16 @@ angular.module('vr.directives.slider', ['ngTouch']).directive('slider',
                                     }
                                 }
 
+
+                                /**
+                                 * DRY redraw function
+                                 */
+                                function redrawSliders() {
+                                    setPointers();
+                                    adjustBubbles();
+                                    adjustProgressBar();
+                                }
+
                                 /**
                                  * What to do when dragging ends
                                  */
@@ -1185,9 +1194,7 @@ angular.module('vr.directives.slider', ['ngTouch']).directive('slider',
                                         // if we have a pointer reference
 
                                         // update all the elements in the DOM
-                                        setPointers();
-                                        adjustBubbles();
-                                        adjustProgressBar();
+                                        redrawSliders();
 
                                         // the pointer is no longer active
                                         pointer.removeClass('active');
@@ -1394,9 +1401,7 @@ angular.module('vr.directives.slider', ['ngTouch']).directive('slider',
 											ctrl.$setViewValue(scope[refLow]);
 
                                             // update the DOM
-                                            setPointers();
-                                            adjustBubbles();
-                                            adjustProgressBar();
+                                            redrawSliders();
 
                                         });
                                     }
@@ -1580,9 +1585,7 @@ angular.module('vr.directives.slider', ['ngTouch']).directive('slider',
                                 }
 
                                 // update the DOM
-                                setPointers();
-                                adjustBubbles();
-                                adjustProgressBar();
+                                redrawSliders();
 
                                 if(!eventsBound) {
                                     // the events haven't been bound yet
