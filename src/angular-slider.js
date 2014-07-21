@@ -1237,6 +1237,21 @@ angular.module('vr.directives.slider', ['ngTouch']).directive('slider',
                                              */
                                             var currentX = event.clientX || event.x;
 
+                                            /**
+                                             * Because event.clientX and event.x are not included in the touch event object because of the potential
+                                             * for multi-touch, this information is obtained from the first touch event element in the touch event 
+                                             * array.
+                                             * If this array is empty, the function is returned. This results in the last value being used as opposed 
+                                             * to the value resetting to 0.
+                                             */
+                                            if(currentX == undefined) {
+                                                if(event.originalEvent.touches.length) {
+                                                    currentX = event.originalEvent.touches[0].clientX;
+                                                } else {
+                                                    return;
+                                                }
+                                            }
+
                                             if(dragRange) {
                                                 // the entire range is being dragged
 
@@ -1432,7 +1447,8 @@ angular.module('vr.directives.slider', ['ngTouch']).directive('slider',
 									
 									if(scope.ngDisabled && scope.ngDisabled == true) return;
 									
-									event.preventDefault();
+                                    event.preventDefault();
+									event.stopImmediatePropagation(); 
 
 									/**
 									 * The current x position of the mouse/finger/etc.
@@ -1503,18 +1519,17 @@ angular.module('vr.directives.slider', ['ngTouch']).directive('slider',
                                             }
 
                                             // bind events to the range input
-											$swipe.bind(elem, {
-												start : start,
-												move  : function(coords, ev) {
-													onMove(ev);
-												},
-												end   : end,
-												cancel: function(coords, ev) {
-													onEnd(ev);
-												}
-											});
+                                            $swipe.bind(elem, {
+                                                start : start,
+                                                move  : function(coords, ev) {
+                                                    onMove(ev);
+                                                },
+                                                end   : end,
+                                                cancel: function(coords, ev) {
+                                                    onEnd(ev);
+                                                }
+                                            });
                                         }
-
                                         // bind the events to the low value range input
                                         bindSlider(refs.minInput, refs.minPtr, refLow);
 
@@ -1565,7 +1580,7 @@ angular.module('vr.directives.slider', ['ngTouch']).directive('slider',
                                             // bind the swipe move, end, and cancel events
                                             $swipe.bind(elem, {
                                                 move  : function(coords, ev) {
-                                                	onMove(ev);
+                                                    onMove(ev);
                                                 },
                                                 end   : function(coords, ev) {
                                                     onMove(ev);
