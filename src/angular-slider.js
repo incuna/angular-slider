@@ -442,6 +442,8 @@ angular.module('vr.directives.slider', ['ngTouch']).directive('slider',
                     precision           : '@',   // how many decimal places do we care about
                     pointerWidthOverride: '@',   // if defined, override the pointer width
                     noBubbleAdjustment  : '@',   // if defined, turn off bubble adjustment
+                    bubbleTextPrefix    : '@',   // if defined, add string to beggining of bubble text
+                    bubbleTextSuffix    : '@',   // if defined, add string to end of bubble text
                     buffer              : '@',   // how close can the two knobs of a dual knob slider get?
                     stickiness          : '@',   // how sticky should the knobs feel...seriously, how did this get all sticky? gross
                     showSteps           : '@',   // show the step value bubbles?
@@ -691,11 +693,15 @@ angular.module('vr.directives.slider', ['ngTouch']).directive('slider',
                              * @returns {string}
                              */
                             scope.translation = function(value) {
+
+                                var bubbleTextPrefix = (attributes.bubbleTextPrefix == undefined ? '' : attributes.bubbleTextPrefix);
+                                var bubbleTextSuffix = (attributes.bubbleTextSuffix == undefined ? '' : attributes.bubbleTextSuffix);
+
                                 value = parseFloat(value).toFixed(scope.precision);
                                 if(angular.isUndefined(attributes.translateFn)) {
-                                    return '' + value;
+                                    return bubbleTextPrefix + value + bubbleTextSuffix;
                                 }
-                                return scope.translateFn({value: value});
+                                return bubbleTextPrefix + scope.translateFn({value: value}) + bubbleTextSuffix;
                             };
 
                             /**
