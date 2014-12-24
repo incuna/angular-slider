@@ -912,8 +912,8 @@ angular.module('vr.directives.slider', ['ngTouch']).directive('slider',
                              */
                             scope.translation = function(value) {
 
-                                var bubbleTextPrefix = (attributes.bubbleTextPrefix == undefined ? '' : attributes.bubbleTextPrefix);
-                                var bubbleTextSuffix = (attributes.bubbleTextSuffix == undefined ? '' : attributes.bubbleTextSuffix);
+                                var bubbleTextPrefix = '<span class="prefix">' + (attributes.bubbleTextPrefix == undefined ? '' : attributes.bubbleTextPrefix) + '</span>';
+                                var bubbleTextSuffix = '<span class="suffix">' + (attributes.bubbleTextSuffix == undefined ? '' : attributes.bubbleTextSuffix) + '</span>';
 
                                 value = parseFloat(value).toFixed(scope.precision);
                                 if(angular.isUndefined(attributes.translateFn)) {
