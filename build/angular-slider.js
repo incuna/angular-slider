@@ -441,6 +441,7 @@ angular.module('vr.directives.slider', ['ngTouch']).directive('slider',
 					stepWidth			: '@',   // alias of step to avoid collisions
                     precision        	: '@',   // how many decimal places do we care about
                     pointerWidthOverride: '@',   // if defined, override the pointer width
+                    noBubbleAdjustment  : '@',   // if defined, turn off bubble adjustment
                     buffer           	: '@',   // how close can the two knobs of a dual knob slider get?
                     stickiness      	: '@',   // how sticky should the knobs feel...seriously, how did this get all sticky? gross
                     showSteps        	: '@',   // show the step value bubbles?
@@ -1405,7 +1406,10 @@ angular.module('vr.directives.slider', ['ngTouch']).directive('slider',
                                  */
                                 function redrawSliders() {
                                     setPointers();
-                                    adjustBubbles();
+                                    // Only adjust bubbles if allowed
+                                    if(scope.noBubbleAdjustment === undefined) {
+                                        adjustBubbles();
+                                    }
                                     adjustProgressBar();
                                 }
 
