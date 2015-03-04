@@ -1232,6 +1232,23 @@ angular.module('vr.directives.slider', ['ngTouch']).directive('slider',
                                              */
                                             var currentX = event.clientX || event.x;
 
+                                            /**
+                                             * Because event.clientX and event.x are not included in the touch event object because of the potential
+                                             * for multi-touch, this information is obtained from the first touch event element in the touch event 
+                                             * array.
+                                             * If this array is empty, the function is returned. This results in the last value being used as opposed 
+                                             * to the value resetting to 0.
+                                             */
+                                            if(currentX == undefined) {
+                                                if(event['touches'] !== undefined && event['touches'].length) {
+                                                    currentX = event.touches[0].clientX;
+                                                } else if(event['originalEvent'] !== undefined && event['originalEvent']['touches'] !== undefined && event['originalEvent']['touches'].length) {
+                                                    currentX = event.originalEvent.touches[0].clientX;
+                                                } else {
+                                                    return;
+                                                }
+                                            }
+
                                             if(dragRange) {
                                                 // the entire range is being dragged
 
