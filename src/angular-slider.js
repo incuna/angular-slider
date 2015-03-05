@@ -570,7 +570,7 @@ angular.module('vr.directives.slider', ['ngTouch']).directive('slider',
                              * Min Pointer width, computed width or overriden width
                              * @type {number}
                              */
-                            var minPtrWidth = (scope.pointerWidthOverride !== undefined ? scope.pointerWidthOverride : width(refs.minPtr));
+                            var minPointerWidth = (scope.pointerWidthOverride !== undefined ? scope.pointerWidthOverride : width(refs.minPtr));
 
                             /**
                              * Left most possible position
@@ -736,10 +736,10 @@ angular.module('vr.directives.slider', ['ngTouch']).directive('slider',
 
                                 // save the various dimensions we'll need
                                 barWidth = width(refs.fullBar);
-                                pointerHalpointerHalfWidth = parseInt(minPtrWidth / 2);
+                                pointerHalfWidth = minPointerWidth / 2;
 
                                 minOffset = offsetLeft(refs.fullBar);
-                                maxOffset = minOffset + barWidth - minPtrWidth;
+                                maxOffset = minOffset + barWidth - minPointerWidth;
                                 offsetRange = maxOffset - minOffset;
 
                                 minValue = scope.floor;
